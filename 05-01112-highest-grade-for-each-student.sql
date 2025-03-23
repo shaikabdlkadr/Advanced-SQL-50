@@ -1,24 +1,52 @@
+-- 1112. Highest Grade For Each Student
+
+/*
+Write a SQL query to find the highest grade with its corresponding course for each student.
+    In case of a tie, you should find the course with the smallest course_id.
+    The output must be sorted by increasing student_id.
+
+Enrollments table:
++------------+-------------------+
+| student_id | course_id | grade |
++------------+-----------+-------+
+| 2          | 2         | 95    |
+| 2          | 3         | 95    |
+| 1          | 1         | 90    |
+| 1          | 2         | 99    |
+| 3          | 1         | 80    |
+| 3          | 2         | 75    |
+| 3          | 3         | 82    |
++------------+-----------+-------+
+
+
+Result table:
++------------+-------------------+
+| student_id | course_id | grade |
++------------+-----------+-------+
+| 1          | 2         | 99    |
+| 2          | 2         | 95    |
+| 3          | 3         | 82    |
++------------+-----------+-------+
+
+*/
+
 -- use RANK() and pull results where rank = 1
 
-select student_id,  course_id, grade
-from
-    (select student_id, course_id, grade, dense_rank() over(partition by student_id order by grade desc, course_id asc) as rnk
-    from Enrollments) temp1
-where rnk = 1
-order by 1
+WITH ranked_stud AS (
+    SELECT student_id, course_id, grade, 
+        dense_rank() OVER(PARTITION BY student_id ORDER BY grade DESC, course_id ASC) AS rnk
+    FROM Enrollments
+)
 
---------------------------------------------------------------------------------------------------------------------------------------------------------------
--- nested 
--- first get id and highest grade, then get min course_id
+SELECT student_id, course_id, grade
+FROM ranked_stud
+WHERE rnk = 1
+ORDER BY 1;
 
-select student_id, min(course_id) as course_id, grade
-from Enrollments
-where (student_id, grade) in
-    (select student_id, max(grade) as grade
-    from Enrollments
-    group by student_id)
-group by student_id
-order by student_id
+-- OR
 
--- amazon- 2
--- coursera- 1
+SELECT student_id, course_id, grade
+FROM (SELECT student_id, course_id, grade, dense_rank() OVER(PARTITION BY student_id ORDER BY grade DESC, course_id ASC) AS rnk
+    FROM Enrollments) subq
+WHERE rnk = 1
+ORDER BY 1;

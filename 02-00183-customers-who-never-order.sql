@@ -1,12 +1,20 @@
+-- 183. Customers Who Never Order
+
 -- pick id from Orders, and do not select those ids
 
-select name as Customers
-from Customers
-where id not in
-    (select distinct customerId
-    from Orders)
+WITH not_order AS (
+    SELECT DISTINCT customerid
+    FROM orders
+)
 
--- amazon- 3
--- apple- 7
--- bloomberg- 5
--- adobe- 2
+select name as customers
+from customers
+where id not in not_order
+
+-- OR
+
+SELECT c.name AS Customers
+FROM customers c
+LEFT JOIN orders o
+    ON c.id = o.customerid
+WHERE o.id is NULL
