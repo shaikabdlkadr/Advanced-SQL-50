@@ -2,10 +2,6 @@
 
 ---
 
-Here's a **README.md** file for your **LeetCode Advanced SQL Learning Path**, structured to help you solve problems and publish your solutions on GitHub. 🚀  
-
----
-
 ### **📌 README.md - LeetCode Advanced SQL Learning Path**
 
 # **LeetCode Advanced SQL Learning Path 🚀**
